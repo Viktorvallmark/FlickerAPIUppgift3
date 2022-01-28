@@ -1,87 +1,42 @@
 const btn = document.querySelector('button');
 const KEY = '80f504ef0b8c81509970c71f21e8813c';
-// console.log(btn);
-
-const size = document.querySelectorAll('option');
-// console.log((size[3].value));
+console.log(btn);
 
 
 
 
 btn.addEventListener('click', function (event) {
     const searchField = document.querySelector('input');
-
     console.log(searchField.value);
-
+    const size = document.getElementById('size');
+    const checkSize = size.options[size.selectedIndex].value;
+    console.log(checkSize);
+    
     removeImg();
 
     const url = `https://www.flickr.com/services/rest/
     ?method=flickr.photos.search&api_key=${KEY}&text=${searchField.value}&format=json&nojsoncallback=1
-    &per_page=1&page=1&auth_token=72157720831079831-771da81ee99d89b2&api_sig=a3f8527ce140198abe441f87b6718a73`;
-
-    console.log(url);
-    // fetch(url).then( fetchCallback ).then( handleSize ).then(function(data){ imageURL(data.photos.photo[0]);}).catch( handleError );
+    &per_page=1&page=1`;
     
     fetch(url).then(function (response) {
+        console.log(response);
         if (response.status >= 200 && response.status < 300) {
             return response.json();
         } else {
 
             throw 'HTTPS status Error!'
         }
-    }).then(function (photoObject) {
-        let sizeValue = handleSize();
-        let photo = photoObject;
-        
-        let imgURL = `https://live.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}_${sizeValue}.jpg`;
-
-        displayImage(imgURL);
-    })
-
+        }).then(data => {console.log(data); imageURL(data.photos.photo[0])}).catch( handleError );
+    
 });
 
-
-
-function handleSize(){
-    let sizeValue = '';
-    for(const opt of size){
-        if(opt.value === 'q'){
-            sizeValue = 'q';
-            return sizeValue;
-
-        }else if (opt.value === 'n'){
-            sizeValue = 'n';
-            return sizeValue;
-
-        }else if (opt.value === 'z'){
-            sizeValue = 'z';
-            return sizeValue;
-
-        }else if(opt.value === 'h'){
-            sizeValue = 'h';
-            return sizeValue;
-
-        }else{
-            throw 'Please choose a size!'
-        }
-
-    }
-    // return sizeValue;
+function imageURL(photoObject){
+    let sizeValue = checkSize;
+    let photo = photoObject;
     
+    let imgURL = `https://live.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}_${sizeValue}.jpg`;
+    displayImage(imgURL);
 }
-
-
-// function numberOfPics(response){
-
-// }
-
-// function imageURL(photoObject){
-//     let photo = photoObject;
-
-//     let imgURL = `https://live.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}_${sizeValue}.jpg`;
-
-//     displayImage(imgURL);
-// }
 
 function displayImage(url){
     let img = document.createElement('img');
